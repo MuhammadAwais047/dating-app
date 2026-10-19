@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ember — Find your person, one swipe at a time</title>
+  <meta name="description" content="Ember is a swipe-based dating app demo built with pure vanilla JavaScript — drag-to-swipe cards, matching, and a matches board. No frameworks, no accounts." />
+  <meta property="og:title" content="Ember — Find your person" />
+  <meta property="og:description" content="A swipe-based dating app demo in pure vanilla JavaScript." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#140f1a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="./" aria-label="Ember home"><span aria-hidden="true">🔥</span> Ember</a>
+      <div class="top-actions">
+        <button id="deck-btn" class="nav-btn active" type="button">Discover</button>
+        <button id="matches-btn" class="nav-btn" type="button">Matches <b id="match-count">0</b></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <aside class="intro">
+      <p class="kicker">A swipe-based dating demo</p>
+      <h1>Find your person,<br>one swipe at a time.</h1>
+      <p class="intro-sub">Drag a card right to like, left to pass, or up for a super like. When the feeling is mutual, Ember lights a match.</p>
+      <ul class="steps">
+        <li><span>1</span> Swipe through the deck</li>
+        <li><span>2</span> Super likes always match</li>
+        <li><span>3</span> Collect your matches</li>
+      </ul>
+      <p class="disclaimer">All profiles are fictional demo characters. Photos by <a href="https://randomuser.me" target="_blank" rel="noopener noreferrer">randomuser.me</a>.</p>
+    </aside>
+
+    <section class="app" aria-label="Dating app demo">
+      <div id="deck-wrap" class="deck-wrap">
+        <div id="deck" class="deck"></div>
+
+        <div id="deck-empty" class="deck-empty" hidden>
+          <p class="empty-ico" aria-hidden="true">🌙</p>
+          <h2>You're all caught up</h2>
+          <p>That's the whole deck for now. Fresh faces are always arriving — or start over and revisit the profiles.</p>
+          <button id="reset-deck" class="grad-btn" type="button">Start over</button>
+        </div>
+      </div>
+
+      <div class="actions" id="actions">
+        <button id="undo-btn" class="act-btn undo" type="button" aria-label="Undo last swipe" title="Undo (Backspace)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+        </button>
+        <button id="pass-btn" class="act-btn pass" type="button" aria-label="Pass" title="Pass (←)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <button id="super-btn" class="act-btn super" type="button" aria-label="Super like" title="Super like (↑)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.3l7.1-.7z"/></svg>
+        </button>
+        <button id="like-btn" class="act-btn like" type="button" aria-label="Like" title="Like (→)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9A5.4 5.4 0 0 1 12 6.6 5.4 5.4 0 0 1 21.6 12C19.5 16.4 12 21 12 21z"/></svg>
+        </button>
+      </div>
+      <p class="hint">Drag the card — or use the buttons / arrow keys</p>
+    </section>
+
+    <section id="matches-view" class="matches-view" hidden>
+      <div class="matches-head">
+        <h2>Your matches</h2>
+        <button id="back-deck" class="ghost-btn" type="button">← Back to swiping</button>
+      </div>
+      <div id="matches-grid" class="matches-grid"></div>
+      <div id="matches-empty" class="matches-empty" hidden>
+        <p class="empty-ico" aria-hidden="true">💫</p>
+        <h3>No matches yet</h3>
+        <p>Keep swiping — a super like is a guaranteed match.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Ember — a vanilla-JS dating app demo by
+      <a href="https://github.com/MuhammadAwais047" target="_blank" rel="noopener noreferrer">Muhammad Awais</a> ·
+      <a href="https://github.com/MuhammadAwais047/dating-app" target="_blank" rel="noopener noreferrer">Source</a></p>
+  </footer>
+
+  <!-- ============ MATCH MODAL ============ -->
+  <div id="match-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="match-title" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="match-card">
+      <p class="match-kicker">It's a match!</p>
+      <h2 id="match-title">You and <span id="match-name"></span> liked each other</h2>
+      <div class="match-avatars">
+        <span class="avatar you-big">You</span>
+        <span class="heart-beat" aria-hidden="true">💖</span>
+        <img id="match-photo" class="avatar big-img" alt="" />
+      </div>
+      <p id="match-sub" class="match-sub">Say hi — great conversations start with something small.</p>
+      <div class="match-actions">
+        <button id="match-keep" class="ghost-btn" type="button">Keep swiping</button>
+        <button id="match-see" class="grad-btn" type="button">See matches</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
